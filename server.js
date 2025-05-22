@@ -16,7 +16,13 @@ app.use(cookieParser());
 const PORT = process.env.PORT || 5000;
 database.connect();
 app.use(express.json());
-app.use(cors());
+ 
+
+app.use(cors({
+  origin: 'http://localhost:5173', // your frontend origin
+  credentials: true,              // allow credentials (cookies, headers)
+}));
+
 
 app.get("/", (req, res) => {
 	return res.json({
