@@ -12,16 +12,24 @@ const User = require('../models/UserModel');
 exports.createOrUpdateJobSeekerProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { skills, experience, education } = req.body;
+    const {
+      phone,
+      location,
+      bio
+      // DO NOT destructure skills, experience, education here if parsing them below
+    } = req.body;
 
-    const resumeUrl = req.file?.path; // from Cloudinary, not local file
+    const resumeUrl = req.file?.path;
 
     const profileData = {
       user: userId,
       ...(resumeUrl && { resume: resumeUrl }),
-      ...(skills && { skills: JSON.parse(skills) }),
-      ...(experience && { experience: JSON.parse(experience) }),
-      ...(education && { education: JSON.parse(education) }),
+      ...(phone && { phone }),
+      ...(location && { location }),
+      ...(bio && { bio }),
+      ...(req.body.skills && { skills: JSON.parse(req.body.skills) }),
+      ...(req.body.experience && { experience: JSON.parse(req.body.experience) }),
+      ...(req.body.education && { education: JSON.parse(req.body.education) })
     };
 
     const profile = await JobSeekerProfile.findOneAndUpdate(
