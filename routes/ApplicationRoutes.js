@@ -11,8 +11,9 @@ const {
 } = require('../controllers/ApplicationController');
 
 // Jobseeker only
-router.post('/apply/:jobId', auth, isJobSeeker, applyForJob); 
 router.get('/applied' , auth , isJobSeeker ,getAppliedApplications);
+router.post('/apply/:jobId', auth, isJobSeeker, applyForJob); 
+
 router.delete('/withdraw/:appId', auth, isJobSeeker, withdrawApplication);
 
 

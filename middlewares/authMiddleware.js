@@ -4,14 +4,16 @@ const User = require('../models/UserModel');
 exports.auth = async (req, res, next) => {
 	try {
 		// Extracting JWT from request cookies, body or header
-		
-		const token =
-			req.cookies.token ||
-			req.body.token ||
-			req.header("Authorization").replace("Bearer ", "");
+		let token = req.cookies.token || req.body.token;
 
+		if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+		token = req.headers.authorization.split(" ")[1];
+		}
+
+		console.log(token);
 		// If JWT is missing, return 401 Unauthorized response
 		if (!token) {
+			
 			return res.status(401).json({ success: false, message: `Token Missing` });
 		}
 
@@ -31,6 +33,8 @@ exports.auth = async (req, res, next) => {
 		// If JWT is valid, move on to the next middleware or request handler
 		next();
 	} catch (error) {
+		
+		
 		// If there is an error during the authentication process, return 401 Unauthorized response
 		return res.status(401).json({
 			success: false,

@@ -12,9 +12,10 @@ const {
 } = require('../controllers/JobController');
 
 router.get('/my-jobs', auth, isRecruiter, getJobsByRecruiter); //(get request)
+router.get('/AllJobs', getAllJobs); 
 // Public
 router.get('/:id', getJobDetails); //get details of particular job
-router.get('/AllJobs', getAllJobs); 
+
 
 // Protected - Recruiter only
 router.post('/', auth, isRecruiter, createJob); // / jobs/
