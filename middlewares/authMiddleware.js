@@ -4,9 +4,15 @@ const User = require('../models/UserModel');
 exports.auth = async (req, res, next) => {
 	try {
 		// Extracting JWT from request cookies, body or header
+		console.log("reached here");
+		
+		console.log("cookies oyo" , req.cookies);
 		let token = req.cookies.token || req.body.token;
+		console.log("middleware" , token);
+		console.log(req.headers);
+		
 
-		if (!token && req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
+		if (req.headers.authorization && req.headers.authorization.startsWith("Bearer ")) {
 		token = req.headers.authorization.split(" ")[1];
 		}
 
