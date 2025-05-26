@@ -12,9 +12,8 @@ const jobSchema = new mongoose.Schema({
   postedDate: { type: Date, default: Date.now },
   applicationDeadline: Date,
   status: { type: String, enum: ['open', 'closed'], default: 'open' },
-  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company'},
+  company: { type:String},
   recruiter: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
 }, { timestamps: true });
-
 
 module.exports = mongoose.model('Job', jobSchema);

@@ -33,7 +33,7 @@ exports.signup = async (req, res) => {
     if (!firstName || !lastName || !email || !password || !confirmPassword || !role) {
       return res.status(400).json({ error: 'All fields are required' });
     }
-    if (!['jobseeker', 'recruiter'].includes(role.toLowerCase())) {
+    if (!['jobseeker', 'recruiter','admin'].includes(role.toLowerCase())) {
       return res.status(400).json({ error: 'Invalid role' });
     }
     if (password !== confirmPassword) {
@@ -58,8 +58,8 @@ exports.signup = async (req, res) => {
     // 3. Create profile
     if (user.role === 'jobseeker') {
       await JobSeekerProfile.create({ user: user._id });
-    } else {
-      await RecruiterProfile.create({ user: user._id });
+    } else if(user.role === 'recruiter'){
+      await RecruiterProfile.create({ user: user._id , company : '' });
     }
 
     // 4. Issue token in cookie
@@ -87,6 +87,8 @@ exports.signup = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email);
+    console.log(password);
     // 1. Validate
     if (!email || !password) {
       return res.status(400).json({ error: 'Email and password required' });
@@ -96,6 +98,9 @@ exports.login = async (req, res) => {
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    console.log(user);
+    
     const match = await bcrypt.compare(password, user.password);
     if (!match) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -114,6 +119,7 @@ exports.login = async (req, res) => {
         lastName: user.lastName,
         email: user.email,
         role: user.role,
+        verificationStatus: user.verificationStatus
       },
     });
   } catch (err) {

@@ -23,10 +23,19 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['jobseeker', 'recruiter'],
+    enum: ['jobseeker', 'recruiter','admin'],
     required: [true, 'Please specify role'],
   },
-  company: { type: mongoose.Schema.Types.ObjectId, ref: 'Company', default: null } 
+  company: { type: String } ,
+  
+  // ...existing fields
+  verificationStatus: {
+    type: String,
+    enum: ['pending', 'verified', 'rejected'],
+    default: 'pending',
+  },
+
+
 }, {
   timestamps: true,
 });

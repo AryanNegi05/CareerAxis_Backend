@@ -3,37 +3,56 @@ const Job = require('../models/JobsModel');
 
 exports.applyForJob = async (req, res) => {
   try {
-    const userId = req.user.userId;       // From auth middleware
-    const {resumeUrl, coverLetter } = req.body;
+    const userId = req.user.userId; // From auth middleware
+    const { resume, coverLetter } = req.body;
     const jobId = req.params.jobId;
 
-    if (!jobId) return res.status(400).json({ message: 'Job ID is required' });
+    if (!jobId) {
+      return res.status(400).json({ message: 'Job ID is required' });
+    }
 
     // Check if job exists
     const job = await Job.findById(jobId);
-    if (!job) return res.status(404).json({ message: 'Job not found' });
+    if (!job) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    // Check if job is open
+    if (job.status !== 'open') {
+      return res.status(400).json({ message: 'Job is closed for applications' });
+    }
+
+    // Check if application deadline has passed
+    const now = new Date();
+    if (job.applicationDeadline && job.applicationDeadline < now) {
+      return res.status(400).json({ message: 'Application deadline has passed' });
+    }
 
     // Check if user already applied
     const alreadyApplied = await Application.findOne({ jobId: jobId, applicant: userId });
-    if (alreadyApplied) return res.status(400).json({ message: 'You have already applied for this job' });
+    if (alreadyApplied) {
+      return res.status(400).json({ message: 'You have already applied for this job' });
+    }
 
     // Create application
     const application = new Application({
       jobId: jobId,
       applicant: userId,
-      resumeUrl,
+      resume,
       coverLetter,
-      status: 'applied',  // default status on apply
-      appliedAt: new Date(),
+      status: 'applied', // default status on apply
+      appliedAt: now,
     });
 
     await application.save();
-    res.status(201).json({ message: 'Application submitted successfully', application });
+    return res.status(201).json({ message: 'Application submitted successfully', application });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
+
 
 exports.withdrawApplication = async (req, res) => {
   try {
@@ -103,21 +122,23 @@ exports.rejectApplication = async (req, res) => {
 
 exports.listApplications = async (req, res) => {
   try {
+    console.log("call lagi")
     const jobId = req.params.jobId;
 
     // Verify job exists and recruiter owns the job
     const job = await Job.findById(jobId);
+    console.log(job);
     if (!job) return res.status(404).json({ message: 'Job not found' });
 
-    if (job.recruiter.toString() !== req.user._id.toString()) {
+    if (job.recruiter.toString() !== req.user.userId.toString()) {
       return res.status(403).json({ message: 'Unauthorized' });
     }
 
-    const applications = await Application.find({ job: jobId })
-      .populate('applicant', 'firstName lastName email') // applicant info
+    const applications = await Application.find({ jobId: jobId })
+      .populate('applicant', 'firstName lastName email ') // applicant info
       .sort({ appliedAt: -1 });
 
-    res.status(200).json({ applications });
+    return res.status(200).json({ applications });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Server error' });

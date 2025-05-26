@@ -6,7 +6,9 @@ const authRoutes = require('./routes/authRoutes');
 const applicationRoutes = require('./routes/ApplicationRoutes');
 const profileRoutes = require('./routes/profileRoutes');
 const jobRoutes = require('./routes/JobRoutes');
+const adminRoutes = require('./routes/AdminRoutes')
 const cookieParser = require("cookie-parser");
+
 
 require('dotenv').config();
 
@@ -43,6 +45,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/application", applicationRoutes);
 app.use("/api/v1/jobs", jobRoutes);
 app.use("/api/v1/profile", profileRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // ✅ Start server
 app.listen(PORT, () => {
