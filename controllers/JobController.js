@@ -27,6 +27,7 @@ exports.createJob = async (req, res) => {
       applicationDeadline,
       company: profile.company,
       recruiter: userId,
+      applicationCount : 0
     });
 
     await newJob.save();

@@ -41,10 +41,13 @@ exports.applyForJob = async (req, res) => {
       resume,
       coverLetter,
       status: 'applied', // default status on apply
+      recruiter : job.recruiter,
       appliedAt: now,
     });
 
     await application.save();
+    job.applicationCount = (job.applicationCount || 0) + 1;
+    await job.save();
     return res.status(201).json({ message: 'Application submitted successfully', application });
 
   } catch (error) {
@@ -59,6 +62,7 @@ exports.withdrawApplication = async (req, res) => {
     const userId = req.user.userId;
     const appId = req.params.appId;
 
+
     // Find application by id and ensure it belongs to user
     const application = await Application.findOne({ _id: appId, applicant: userId });
     if (!application) return res.status(404).json({ message: 'Application not found or unauthorized' });
@@ -69,6 +73,13 @@ exports.withdrawApplication = async (req, res) => {
     }
 
     await application.deleteOne();
+    const jobId = application.jobId;                       // assumes Application has a `job` field
+    await Job.findByIdAndUpdate(
+      jobId,
+      { $inc: { applicationCount: -1 } },
+      { new: false }
+    );
+    
     res.status(200).json({ message: 'Application withdrawn successfully' });
   } catch (error) {
     console.error(error);
@@ -164,6 +175,29 @@ exports.getAppliedApplications = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: 'Server error while fetching applied applications',
+    });
+  }
+};
+
+exports.getAllRecruiterApplications = async (req, res) => {
+  try {
+    console.log("ye call lagri hai?")
+    const userId = req.user.userId;
+    console.log("all application pending", userId);
+
+    const pendingApps = await Application.find({
+      recruiter: userId,
+      status: { $nin: ['accepted', 'rejected'] }
+    });
+    console.log(pendingApps);
+    return res.status(200).json({
+      success: true,
+      pendingApps
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: "Applications not found"
     });
   }
 };

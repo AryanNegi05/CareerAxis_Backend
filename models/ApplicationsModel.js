@@ -10,6 +10,7 @@ const applicationSchema = new mongoose.Schema({
     enum: ['applied', 'rejected', 'accepted'], 
     default: 'applied' 
   },
+  recruiter : {type : mongoose.Schema.Types.ObjectId , ref: 'User' , required:true },
   appliedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

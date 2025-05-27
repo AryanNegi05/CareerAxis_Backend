@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { auth, isRecruiter, isJobSeeker, isVerifiedRecruiter } = require('../middlewares/authMiddleware');
 const {
+  getAllRecruiterApplications,
   applyForJob,
   withdrawApplication,
   acceptApplication,
@@ -10,6 +11,7 @@ const {
   getAppliedApplications,
 } = require('../controllers/ApplicationController');
 
+router.get('/pending', auth, isRecruiter, getAllRecruiterApplications);
 // Jobseeker only
 router.get('/applied', auth, isJobSeeker, getAppliedApplications);
 router.post('/apply/:jobId', auth, isJobSeeker, applyForJob); 

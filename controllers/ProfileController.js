@@ -50,6 +50,7 @@ exports.createOrUpdateJobSeekerProfile = async (req, res) => {
 
 exports.getJobSeekerProfile = async (req, res) => {
   try {
+    console.log("profile dhundhne do")
     const profile = await JobSeekerProfile.findOne({ user: req.user.userId })
       .populate({
         path: 'user',
@@ -71,6 +72,7 @@ exports.getJobSeekerProfile = async (req, res) => {
 exports.getJobSeekerProfileById = async (req, res) => {
   try {
     const userId = req.params.userId;
+    console.log("iski id se profile hai " , userId);
 
     const profile = await JobSeekerProfile.findOne({ user: userId })
       .populate({
@@ -156,8 +158,7 @@ exports.createOrUpdateRecruiterProfile = async (req, res) => {
       const allowReuploadIfRejected = !companyChanged && file && user.verificationStatus === 'rejected';
       if (allowReuploadIfRejected) {
         // Add new document to array (matching model field name)
-        profile.verificationDocs = profile.verificationDocs || [];
-        profile.verificationDocs.push(file.path);
+        profile.verificationDocs = [file.path];
         user.verificationStatus = 'pending'; // reverify
       }
 
@@ -172,8 +173,7 @@ exports.createOrUpdateRecruiterProfile = async (req, res) => {
 
       if (companyChanged && file) {
         // Add new document to array
-        profile.verificationDocs = profile.verificationDocs || [];
-        profile.verificationDocs.push(file.path);
+        profile.verificationDocs = [file.path];
         user.verificationStatus = 'pending'; // reset on change
       }
 
