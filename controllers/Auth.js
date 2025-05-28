@@ -127,3 +127,43 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
+exports.getAuthUser = async (req, res) => {
+  try {
+    // 1. Get token from Authorization header
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Authorization header missing or invalid' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    // 2. Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 3. Fetch user from DB
+    const user = await User.findById(decoded.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // 4. Return user info
+    res.status(200).json({
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+        verificationStatus: user.verificationStatus,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      }
+    });
+
+  } catch (err) {
+    console.error('getAuthUser error:', err);
+    res.status(401).json({ error: 'Invalid or expired token' });
+  }
+};

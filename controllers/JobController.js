@@ -130,8 +130,9 @@ exports.getJobsByRecruiter = async (req, res) => {
   try {
     console.log("idhar to aagye ji")
     const recruiterId = req.user.userId;
+    const profile = await RecruiterProfile.findOne({ user: recruiterId });
     
-    const jobs = await Job.find({ recruiter: recruiterId })
+    const jobs = await Job.find({ recruiter: recruiterId,company: profile.company })
       .populate('company', 'name location')
       .sort({ createdAt: -1 });
     

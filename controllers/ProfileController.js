@@ -1,6 +1,7 @@
 const JobSeekerProfile = require('../models/JobSeekerProfile');
 const RecruiterProfile = require('../models/RecruiterProfile');
 const User = require('../models/UserModel');
+const Jobs = require('../models/JobsModel')
 const Applications = require('../models/ApplicationsModel')
 
 // =======================
@@ -175,6 +176,10 @@ exports.createOrUpdateRecruiterProfile = async (req, res) => {
         // Add new document to array
         profile.verificationDocs = [file.path];
         user.verificationStatus = 'pending'; // reset on change
+        await Jobs.updateMany(
+    { recruiter: userId, status: { $ne: 'closed' } },
+    { $set: { status: 'closed' } }
+  );
       }
 
       await profile.save();
