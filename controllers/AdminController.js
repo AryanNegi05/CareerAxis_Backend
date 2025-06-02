@@ -70,3 +70,23 @@ exports.updateRecruiterVerification = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+exports.getAllUsersAdmin = async (req, res) => {
+  try {
+    const users = await User.find({}, 'role verificationStatus firstName lastName email'); // only select the fields you need
+
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({
+      success: false,
+      message: 'Server error while fetching users',
+    });
+  }
+};
+
+
