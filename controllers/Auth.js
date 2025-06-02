@@ -18,7 +18,7 @@ function makeToken(userId, role) {
 // Cookie options
 const cookieOptions = {
   httpOnly: true,
-  // secure: true,           // uncomment if using HTTPS
+  secure: true,           // uncomment if using HTTPS
   sameSite: 'lax',
   maxAge: (() => {
     const expire = process.env.JWT_COOKIE_EXPIRES_DAYS || 7;
