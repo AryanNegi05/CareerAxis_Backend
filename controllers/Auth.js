@@ -19,7 +19,7 @@ function makeToken(userId, role) {
 const cookieOptions = {
   httpOnly: true,
   sameSite: 'None', // Required for cross-site cookie sharing
-secure: true      // Must be true when using sameSite: 'None'
+secure: true ,     // Must be true when using sameSite: 'None'
 
   maxAge: (() => {
     const expire = process.env.JWT_COOKIE_EXPIRES_DAYS || 7;
