@@ -20,7 +20,7 @@ database.connect();
 
 // ✅ Apply CORS first
 app.use(cors({
-  origin: 'http://localhost:5173', // Your React frontend
+  origin: process.env.CORS_ORIGIN, // Your React frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true // ✅ This allows cookie exchange
